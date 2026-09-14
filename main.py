@@ -23,14 +23,10 @@ from batch_handlers import (
 from chat_handlers import handle_incoming_message, on_message_reaction
 
 async def post_init(app: Application):
-    # Register global default commands so they show up universally
-    await app.bot.set_my_commands([
-        BotCommand("start", "Start / redeem a code"),
-        BotCommand("get_link", "Create a new media batch link"),
-        BotCommand("link_stats", "View, rotate, or delete your links"),
-        BotCommand("broadcast", "Interactive multi-media broadcast to all users"),
-    ], scope=BotCommandScopeDefault())
+    # Hide the command menu globally for regular users
+    await app.bot.set_my_commands([], scope=BotCommandScopeDefault())
     
+    # Only show the command menu for the admin chat
     try:
         await app.bot.set_my_commands(
             [
