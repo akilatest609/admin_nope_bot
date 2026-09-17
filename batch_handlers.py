@@ -8,7 +8,7 @@ from telegram import (
     InlineKeyboardMarkup,
     InputMediaPhoto,
     InputMediaVideo,
-    BotCommand,            # Added missing import
+    BotCommand,            # Added missing importa
     BotCommandScopeChat,   # Added missing import
     BotCommandScopeDefault,# Added default scope for clearing global commands
 )
