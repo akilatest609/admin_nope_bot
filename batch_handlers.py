@@ -8,6 +8,8 @@ from telegram import (
     InlineKeyboardMarkup,
     InputMediaPhoto,
     InputMediaVideo,
+    BotCommand,           # Added missing import
+    BotCommandScopeChat,  # Added missing import
 )
 from telegram.constants import ParseMode
 from telegram.error import RetryAfter, TimedOut, NetworkError
@@ -99,8 +101,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 ],
                 scope=BotCommandScopeChat(chat_id=ADMIN_ID),
             )
-        except Exception:
-            pass
+        except Exception as e:
+            log.warning(f"Failed to set admin commands: {e}")
 
     args = context.args
     if args:
