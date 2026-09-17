@@ -2,14 +2,15 @@
 import asyncio
 import html
 import time
-from telegram import ( 
+from telegram import (
     Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     InputMediaPhoto,
     InputMediaVideo,
-    BotCommand,           # Added missing import
-    BotCommandScopeChat,  # Added missing import
+    BotCommand,            # Added missing import
+    BotCommandScopeChat,   # Added missing import
+    BotCommandScopeDefault,# Added default scope for clearing global commands
 )
 from telegram.constants import ParseMode
 from telegram.error import RetryAfter, TimedOut, NetworkError
@@ -89,7 +90,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user:
         register_user(user.id, user.first_name or "", user.username or "")
 
-    # Force-set admin commands when the admin interacts with the bot
+    # Clear global commands so regular users don't inherit them by default
+    try:
+        await context.bot.set_my_commands([], scope=BotCommandScopeDefault())
+    except Exception:
+        pass
+
+    # Force-set admin commands strictly for the admin chat
     if is_admin(update):
         try:
             await context.bot.set_my_commands(
@@ -103,6 +110,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         except Exception as e:
             log.warning(f"Failed to set admin commands: {e}")
+    else:
+        # Clear commands specifically for regular user chats
+        try:
+            await context.bot.set_my_commands([], scope=BotCommandScopeChat(chat_id=user.id))
+        except Exception:
+            pass
 
     args = context.args
     if args:
